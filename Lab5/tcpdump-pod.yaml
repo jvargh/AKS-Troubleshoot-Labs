@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tcpdump-pvc-pod
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile
+  resources:
+    requests:
+      storage: 50Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: tcpdump-pod
+  name: tcpdump-pod
+spec:
+  nodeName: aks-nodepool1-31145798-vmss000000
+  containers:
+  - command:
+    - bash
+    - -c
+    - |
+      mkdir -p /root/tcpdump && apt update && apt install tcpdump -y
+      /usr/sbin/tcpdump -n -s 0 -C 500 -W 15 -tttt  -w /root/tcpdump/"$NODE_NAME ""$(date +"%Y_%m_%d_%I_%M_%p").cap"
+    env:
+    - name: NODE_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
+    image: ubuntu:18.04
+    name: tcpdump-pod
+    securityContext:
+      privileged: true
+    volumeMounts:
+      - mountPath: /root/tcpdump
+        name: tcpdump
+  hostNetwork: true
+  hostPID: true
+  nodeSelector:
+    kubernetes.io/os: linux
+  restartPolicy: Always
+  volumes:
+  - name: tcpdump
+    persistentVolumeClaim:
+      claimName: tcpdump-pvc-pod

@@ -1,0 +1,43 @@
+# https://nodejs.org/en/docs/guides/nodejs-docker-webapp/
+
+# WORKING
+docker build -f .\Dockerfile-working -t jvargh/nodejs-app:working .
+docker images
+docker run -p 4000:4000 -d jvargh/nodejs-app:working
+docker ps
+docker logs <id>    # Running on http://0.0.0.0:4000
+docker exec -it <id> /bin/bash
+curl -i localhost
+docker rm -f <id>
+
+# NON-WORKING
+docker build -f .\Dockerfile-faulty -t jvargh/nodejs-app:faulty .
+docker run -p 4000:4000 -d jvargh/nodejs-app:faulty
+docker ps
+docker logs <id>    # Running on http://0.0.0.0:4000
+docker exec -it <id> /bin/bash
+curl -i localhost
+docker rm -f <id>
+
+# TEST
+node server.js 80 0.0.0.0
+
+# PUSH to docker.io
+docker push jvargh/nodejs-app:working
+kubectl apply -f .\working-app.yaml
+#
+docker push jvargh/nodejs-app:faulty
+kubectl apply -f .\faulty-app.yaml
+
+
+# using 0.0.0.0
+docker build . -t working-app
+docker tag working-app acrjv1971.azurecr.io/working-app
+docker push acrjv1971.azurecr.io/working-app
+
+# using 127.0.0.1
+docker build . -t node-not-working-app
+docker tag node-not-working-app acrjv1971.azurecr.io/node-not-working-app
+docker push acrjv1971.azurecr.io/node-not-working-app
+
+# docker system prune -a
