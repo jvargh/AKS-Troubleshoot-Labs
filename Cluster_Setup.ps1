@@ -47,7 +47,7 @@ az group create --name $resource_group --location $location
 az monitor log-analytics workspace create `
     --resource-group $resource_group `
     --workspace-name $log_analytics_workspace_name `
-    --location $location
+    --location $location --no-wait
 
 $log_analytics_workspace_resource_id=az monitor log-analytics workspace show `
     --resource-group $resource_group `
