@@ -1,7 +1,7 @@
 Lab setup instructions
 ======================
 
-1.	Run below commands to initialize the Setup process.
+1. Run below commands to initialize the Setup process.
 
 az login
 az account set --subscription "Azure Pass - Sponsorship"
@@ -21,7 +21,7 @@ Or use
 az provider list --query "[?registrationState=='Registered'].namespace"
 
 
-2.	Build out Resource Group and Setup Log Analytics Workspace for AKS cluster
+2. Build out Resource Group and Setup Log Analytics Workspace for AKS cluster
 
 # Build out Resource Groups and AKS Cluster
 # Don’t replace any of below. Use as-is
@@ -32,14 +32,12 @@ $aks_vnet=$aks_name+"-vnet"
 $aks_subnet=$aks_name+"-subnet"	
 $log_analytics_workspace_name=$aks_name+"-log-analytics-workspace"
 
-
 echo $resource_group
 echo $aks_name
 echo $aks_vnet
 echo $aks_subnet
 echo $location
 echo $log_analytics_workspace_name
-
 
 az group create --name $resource_group --location $location
 
@@ -56,7 +54,8 @@ $log_analytics_workspace_resource_id=az monitor log-analytics workspace show `
 echo $log_analytics_workspace_resource_id
 
 
-3.	Create custom AKS VNet and Subnet
+3. Create custom AKS VNet and Subnet
+
 az network vnet create `
   --resource-group $resource_group `
   --name $aks_vnet `
@@ -71,7 +70,7 @@ $vnet_subnet_id=az network vnet subnet show `
     --query id --output tsv
 echo $vnet_subnet_id
 
-4.	Create AKS cluster using custom VNet subnet.
+4. Create AKS cluster using custom VNet subnet.
 
 az aks create `
     --resource-group $resource_group `
@@ -86,16 +85,17 @@ az aks create `
     --generate-ssh-keys `
     --workspace-resource-id $log_analytics_workspace_resource_id
 
-5.	Setup kubectl alias:
+5. Setup kubectl alias:
 # Bash
 alias k='kubectl'
 # Powershell 
 set-alias -Name k -Value kubectl
 
-6.	Setup credentials:
-	az aks get-credentials -g $resource_group -n $aks_name --overwrite-existing
+6. Setup credentials:
+az aks get-credentials -g $resource_group -n $aks_name --overwrite-existing
 
-7.	Switch to the newly created namespace
+7. Switch to the newly created namespace
+
 kubectl create ns student
 kubectl config set-context --current --namespace=student
 # Verify current namespace
@@ -103,12 +103,13 @@ kubectl config view --minify --output 'jsonpath={..namespace}'
 # Confirm ability to view 
 kubectl get pods -A
 
-8.	If jq and curl isnt installed, open a Powershell as Admin, and run below commands:
+8. If jq and curl isnt installed, open a Powershell as Admin, and run below commands:
+
 choco install jq -y
 choco install curl -y
 choco install grep -y
 
-9.	Enable AKS Diagnostics logging using CLI as shown. 
+9. Enable AKS Diagnostics logging using CLI as shown. 
 
 $aks_resource_id=az aks show `
     --resource-group $resource_group `
@@ -124,7 +125,7 @@ az monitor diagnostic-settings create `
     --metrics '[{"category":"AllMetrics","enabled":true}]' `
 	--workspace $log_analytics_workspace_resource_id
 
-This should be visible from Portal in AKS > Diagnostics settings. After some time, AzureDiagnostics should appear in Monitoring > Logs as shown in doc.
+# This should be visible from Portal in AKS > Diagnostics settings. After some time, AzureDiagnostics should appear in Monitoring > Logs as shown in doc.
 	  
 
  
