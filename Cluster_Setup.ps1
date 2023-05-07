@@ -95,6 +95,8 @@ set-alias -Name k -Value kubectl
 az extension add -n k8s-configuration # or use update 
 az extension add -n k8s-extension # or use update
 az extension list -o table
+# list addons
+az aks addon list -g $resource_group -n $aks_name -o table
 
 6. Setup credentials:
 az aks get-credentials -g $resource_group -n $aks_name --overwrite-existing
