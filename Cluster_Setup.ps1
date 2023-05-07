@@ -91,6 +91,11 @@ alias k='kubectl'
 # Powershell 
 set-alias -Name k -Value kubectl
 
+# Install the latest k8s-configuration and k8s-extension CLI extension packages
+az extension add -n k8s-configuration # or use update 
+az extension add -n k8s-extension # or use update
+az extension list -o table
+
 6. Setup credentials:
 az aks get-credentials -g $resource_group -n $aks_name --overwrite-existing
 
